@@ -39,8 +39,8 @@ async def feedback(request: FeedbackRequest) -> FeedbackResponse:
         "Berikan penilaianmu sesuai format."
     )
     try:
-        # 2048, bukan 512: model 3.x "berpikir" dulu dan token pikirannya
-        # ikut makan jatah ini — 512 habis sebelum FEEDBACK sempat ditulis
+        # 2048, bukan 512: model 3.5 butuh mikir dulu dan token pikirannya
+        # ikut makan jatah ini,  512 habis sebelum FEEDBACK sempat ditulis
         raw = await llm.chat(
             EVALUATOR_PROMPT, [{"role": "barista", "text": prompt}], max_tokens=2048
         )
