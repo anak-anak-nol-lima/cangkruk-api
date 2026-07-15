@@ -39,23 +39,28 @@ async def feedback(request: FeedbackRequest) -> FeedbackResponse:
         "Berikan penilaianmu sesuai format."
     )
     try:
+        # 2048, bukan 512: model 3.x "berpikir" dulu dan token pikirannya
+        # ikut makan jatah ini — 512 habis sebelum FEEDBACK sempat ditulis
         raw = await llm.chat(
-            EVALUATOR_PROMPT, [{"role": "barista", "text": prompt}], max_tokens=512
+            EVALUATOR_PROMPT, [{"role": "barista", "text": prompt}], max_tokens=2048
         )
     except llm.LLMUpstreamError as error:
         raise HTTPException(status_code=502, detail=str(error))
     return FeedbackResponse(**parse_feedback(raw))
 
 
+def _strip_label(text: str, label: str) -> str:
+    idx = text.upper().find(label)
+    return text[idx + len(label):] if idx != -1 else text
+
+
 def parse_feedback(raw: str) -> dict:
     text = raw.strip()
     marker = text.upper().find("FEEDBACK:")
     if marker == -1:
-        return {"summary": text, "feedback": ""}
-    summary = text[:marker]
-    s = summary.upper().find("SUMMARY:")
-    if s != -1:
-        summary = summary[s + len("SUMMARY:"):]
+        # tanpa marker FEEDBACK: tetap buang prefix SUMMARY: biar tidak bocor
+        return {"summary": _strip_label(text, "SUMMARY:").strip(), "feedback": ""}
+    summary = _strip_label(text[:marker], "SUMMARY:")
     return {
         "summary": summary.strip(),
         "feedback": text[marker + len("FEEDBACK:"):].strip(),
