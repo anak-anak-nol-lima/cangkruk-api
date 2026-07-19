@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import uuid
 
 import httpx
@@ -155,6 +156,11 @@ async def learning_material(system_prompt: str, max_tokens: int = 16384) -> list
                         body = entry.get("body")
                         if not title or not body:
                             continue
+                        # buang heading markdown (#, ##, ###, ####), teksnya tetap
+                        body = "\n".join(
+                            re.sub(r"^\s*#{1,4}\s*", "", line)
+                            for line in body.splitlines()
+                        )
                         level = entry.get("level", 1)
                         try:
                             level = int(level)
