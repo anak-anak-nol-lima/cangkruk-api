@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class LearningMaterialRequest(BaseModel):
     system_prompt: str
-    max_tokens: int = 4096
+    max_tokens: int = 16384
 
 
 class LearningMaterialItem(BaseModel):

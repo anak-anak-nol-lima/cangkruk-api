@@ -69,7 +69,7 @@ async def chat(system_prompt: str, turns: list[dict], max_tokens: int = 256) -> 
     raise LLMUpstreamError(f"Semua model sedang penuh/gagal. Terakhir: {last_error}")
 
 
-async def learning_material(system_prompt: str, max_tokens: int = 4096) -> list[dict]:
+async def learning_material(system_prompt: str, max_tokens: int = 16384) -> list[dict]:
     """Minta Gemini menyusun kurikulum terstruktur, balikin list materi.
 
     Tiap materi: {id, level, title, body}. Level dibatasi 1..4, id di-assign
@@ -136,7 +136,13 @@ async def learning_material(system_prompt: str, max_tokens: int = 4096) -> list[
                     try:
                         parsed = json.loads(raw)
                     except json.JSONDecodeError:
-                        raise LLMUpstreamError(f"Respons Gemini bukan JSON valid: {raw[:200]}")
+                        # biasanya kepotong karena kehabisan maxOutputTokens
+                        # (token "mikir" Gemini ikut makan jatah), naikkan max_tokens
+                        finish = data["candidates"][0].get("finishReason", "?")
+                        raise LLMUpstreamError(
+                            f"Respons Gemini bukan JSON valid (finishReason={finish}, "
+                            f"kemungkinan kepotong): {raw[-200:]}"
+                        )
 
                     if not isinstance(parsed, list):
                         raise LLMUpstreamError(f"Respons Gemini bukan array: {str(parsed)[:200]}")
