@@ -26,6 +26,7 @@ async def reply(request: ReplyRequest) -> ReplyResponse:
         text = await llm.chat(
             request.system_prompt,
             [turn.model_dump() for turn in request.messages],
+            max_tokens=512,
         )
     except llm.LLMUpstreamError as error:
         raise HTTPException(status_code=502, detail=str(error))
