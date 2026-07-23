@@ -23,7 +23,7 @@ async def chat(system_prompt: str, turns: list[dict], max_tokens: int = 256) -> 
     if not api_key:
         raise LLMUpstreamError("GEMINI_API_KEY belum di-set di environment server")
 
-    primary = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+    primary = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
     models = [primary] + [m for m in FALLBACK_MODELS if m != primary]
 
     payload = {
