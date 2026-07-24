@@ -35,7 +35,13 @@ async def chat(system_prompt: str, turns: list[dict], max_tokens: int = 256) -> 
             }
             for turn in turns
         ],
-        "generationConfig": {"temperature": 0.8, "maxOutputTokens": max_tokens},
+        "generationConfig": {
+            "temperature": 0.8,
+            "maxOutputTokens": max_tokens,
+            "thinkingConfig": {
+                "thinkingBudget": 0
+            }
+        },
     }
 
     last_error = "tidak ada model yang bisa dicoba"
