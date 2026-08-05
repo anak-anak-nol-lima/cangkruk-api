@@ -39,7 +39,9 @@ async def chat(system_prompt: str, turns: list[dict], max_tokens: int = 256) -> 
             "temperature": 0.8,
             "maxOutputTokens": max_tokens,
             "thinkingConfig": {
-                "thinking_level": "low"
+                # matikan "mikir": balasan pelanggan cuma 1-2 kalimat, thinking
+                # cuma nambah latensi (5-13s) tanpa memperbaiki jawaban.
+                "thinkingBudget": 0
             }
         },
     }
